@@ -141,7 +141,7 @@ python app_overseas_young_scholar.py
 此示例仅用于研究与教学，请遵守相关政策法规与平台条款。
 
 ## 引用
-'''
+```
 @misc{nuo2025benzieval,
   author = {Nuo Chen},
   title = {BenziEval},
@@ -150,4 +150,4 @@ python app_overseas_young_scholar.py
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/nuojohnchen/BenziEval}}
 }
-'''
+```
