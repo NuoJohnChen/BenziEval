@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>国内青年人才项目评估系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .header-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+        }
+        .metric-card {
+            border: 1px solid #e3e6f0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .metric-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #5a5c69;
+        }
+        .metric-description {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-top: 0.5rem;
+        }
+        .criteria-explanation {
+            background: #f8f9fc;
+            border-left: 4px solid #4e73df;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 0 5px 5px 0;
+        }
+        .score-scale {
+            background: #fff;
+            border: 1px solid #e3e6f0;
+            border-radius: 5px;
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+        }
+        .loading-spinner {
+            display: none;
+        }
+        .result-section {
+            display: none;
+        }
+        .proposal-input {
+            min-height: 800px !important;
+            height: 800px !important;
+            border: 2px solid #e3e6f0;
+            border-radius: 10px;
+            padding: 1rem;
+        }
+        .pdf-upload-section {
+            background: #f8f9fc;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .thinking-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+        .thinking-content {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 5px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+        }
+        .thinking-toggle {
+            background: #ffc107;
+            border: none;
+            color: #212529;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .thinking-toggle:hover {
+            background: #e0a800;
+        }
+        .thinking-section.loading {
+            background: #e3f2fd;
+            border: 1px solid #90caf9;
+        }
+        .btn-evaluate {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn-evaluate:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .decision-accept {
+            color: #28a745;
+            font-weight: bold;
+        }
+        .decision-reject {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .other-fields {
+            background: #f8f9fc;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        .field-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 5px;
+            border-left: 4px solid #4e73df;
+        }
+        .total-score {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .total-score h2 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+        .suggestions-section {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        .suggestion-item {
+            background: white;
+            border-radius: 5px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="header-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1><i class="fas fa-globe-americas"></i> 国内青年人才项目评估系统</h1>
+                    <p class="lead">基于实际评审标准的专业评估工具</p>
+                    <div class="description-section mt-4">
+                        <p class="mb-3">本系统严格按照国内青年人才项目的5个核心评估维度进行专业评估，为申请人提供客观、具体的改进建议。</p>
+                        <div class="format-info">
+                            <h5 class="text-white-50 mb-3">评估维度说明：</h5>
+                            <div class="row text-start">
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li>• 教育学术与科研工作经历（15分）</li>
+                                        <li>• 科学研究及技术创新成果（30分）</li>
+                                        <li>• 学术见解及技术成果独特性（20分）</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <ul class="list-unstyled">
+                                        <li>• 发展潜力评价（20分）</li>
+                                        <li>• 工作设想与依托单位支持（15分）</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title"><i class="fas fa-edit"></i> 提交申请材料</h3>
+                        <p class="card-text">请提供您的国内青年人才申请材料，系统将进行专业评估并提供改进建议。</p>
+                        
+                        <!-- PDF Upload Section -->
+                        <div class="pdf-upload-section">
+                            <h5><i class="fas fa-file-pdf"></i> 上传PDF或提供URL</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="pdfUrl"><strong>PDF URL:</strong></label>
+                                        <input type="url" class="form-control" id="pdfUrl" 
+                                               placeholder="https://example.com/application.pdf">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="pdfFile"><strong>或上传PDF文件:</strong></label>
+                                        <input type="file" class="form-control" id="pdfFile" accept=".pdf">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <button class="btn btn-outline-primary" id="extractPdfBtn">
+                                    <i class="fas fa-download"></i> 从PDF提取文本
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- API Settings Section -->
+                        <div class="api-settings-section mb-4">
+                            <h5><i class="fas fa-cogs"></i> API 设置</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="apiName"><strong>API Name:</strong></label>
+                                        <input type="text" class="form-control" id="apiName" placeholder="如：deepseek-v3">
+                                        <small class="text-muted">将传给后端的 api_name，用于选择模型，建议使用deepseek-v3。</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="apiBase"><strong>API Base:</strong></label>
+                                        <input type="url" class="form-control" id="apiBase" placeholder="如：https://api.your-llm.com/v1">
+                                        <small class="text-muted">将传给后端的 api_base，用于自定义网关。</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="apiKey"><strong>API Key:</strong></label>
+                                        <input type="password" class="form-control" id="apiKey" placeholder="您的API密钥" autocomplete="off">
+                                        <small class="text-muted">保存在浏览器本地，仅用于本页访问后端。请注意妥善保管。</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Policy Analysis Settings (Optional) -->
+                        <div class="api-settings-section mb-4">
+                            <h5><i class="fas fa-search"></i> 政策分析设置（可选）</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="policyApiName"><strong>Policy API Name:</strong></label>
+                                        <input type="text" class="form-control" id="policyApiName" placeholder="如：deepseek-r1-search-pro">
+                                        <small class="text-muted">政策分析用模型；建议用search模型，如deepseek-r1-search-pro。</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="policyApiBase"><strong>Policy API Base:</strong></label>
+                                        <input type="url" class="form-control" id="policyApiBase" placeholder="如：https://api.your-llm.com/v1">
+                                        <small class="text-muted">政策分析用网关；留空使用通用 API Base。</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group mb-3">
+                                        <label for="policyApiKey"><strong>Policy API Key:</strong></label>
+                                        <input type="password" class="form-control" id="policyApiKey" placeholder="政策分析API密钥" autocomplete="off">
+                                        <small class="text-muted">仅保存在浏览器本地；留空使用通用 API Key。</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="proposalText"><strong>申请材料文本:</strong></label>
+                            <textarea class="form-control proposal-input" id="proposalText" 
+                                style="min-height: 800px; height: 800px;"
+                                placeholder="请粘贴您的国内青年人才申请材料...
+
+建议包含以下内容：
+1. 教育背景和海外科研经历
+2. 主要科研成果和创新贡献
+3. 工作的原创性和独特性
+4. 前期成果与国家需求的契合度
+5. 工作设想和依托单位支持情况"></textarea>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <button class="btn btn-evaluate" id="evaluateBtn">
+                                <i class="fas fa-rocket"></i> 开始评估
+                            </button>
+                        </div>
+                        
+                        <div class="loading-spinner text-center mt-4" id="loadingSpinner">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">正在评估您的申请材料... 这可能需要几分钟时间。</p>
+                        </div>
+                        
+                        <!-- Thinking Process Section -->
+                        <div class="thinking-section" id="thinkingSection">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0"><i class="fas fa-brain"></i> AI评估过程</h5>
+                                <button class="thinking-toggle" id="thinkingToggle">
+                                    <i class="fas fa-eye"></i> 显示/隐藏详情
+                                </button>
+                            </div>
+                            <div class="thinking-content" id="thinkingContent">
+                                <!-- Thinking content will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-section" id="resultSection">
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h2><i class="fas fa-chart-line"></i> 评估结果</h2>
+                </div>
+            </div>
+
+            <!-- Total Score -->
+            <div class="total-score" id="totalScore">
+                <!-- Total score will be populated by JavaScript -->
+            </div>
+
+            <!-- Radar Chart -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><i class="fas fa-chart-radar"></i> 评估维度雷达图</h5>
+                            <div style="position: relative; height: 400px;">
+                                <canvas id="radarChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="row" id="keyMetrics">
+                <!-- Metrics will be populated by JavaScript -->
+            </div>
+
+            <!-- Priority Suggestions -->
+            <div class="suggestions-section" id="suggestionsSection">
+                <h3><i class="fas fa-lightbulb"></i> 优先级改进建议</h3>
+                <div id="suggestionsContent">
+                    <!-- Suggestions will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Other Fields -->
+            <div class="other-fields" id="otherFields">
+                <h3><i class="fas fa-list"></i> 详细评估信息</h3>
+                <div id="otherFieldsContent">
+                    <!-- Other fields will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="container mt-5">
+        <div class="alert alert-secondary small mb-5" role="alert">
+            <strong>免责声明：</strong> 本系统不会存储您的申请材料，评估与政策分析基于公开资料与模型输出，仅供学习与参考，不构成任何评审结论或正式意见。请您自行核验关键信息，并遵守相关政策与申报要求。
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // PDF extraction functionality
+        document.getElementById('extractPdfBtn').addEventListener('click', function() {
+            const pdfUrl = document.getElementById('pdfUrl').value.trim();
+            const pdfFile = document.getElementById('pdfFile').files[0];
+            
+            if (!pdfUrl && !pdfFile) {
+                alert('请提供PDF URL或上传PDF文件。');
+                return;
+            }
+            
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提取中...';
+            
+            let requestOptions = {};
+            
+            if (pdfFile) {
+                // Handle file upload
+                const formData = new FormData();
+                formData.append('pdf_file', pdfFile);
+                if (pdfUrl) {
+                    formData.append('pdf_url', pdfUrl);
+                }
+                requestOptions = {
+                    method: 'POST',
+                    body: formData
+                };
+            } else {
+                // Handle URL only
+                requestOptions = {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({pdf_url: pdfUrl})
+                };
+            }
+            
+            fetch('/extract_pdf', requestOptions)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('proposalText').value = data.text;
+                    alert('PDF文本提取成功！');
+                } else {
+                    alert('错误: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('提取PDF文本时发生错误。');
+            })
+            .finally(() => {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-download"></i> 从PDF提取文本';
+            });
+        });
+
+
+
+        // Thinking toggle functionality
+        document.getElementById('thinkingToggle').addEventListener('click', function() {
+            const content = document.getElementById('thinkingContent');
+            const icon = this.querySelector('i');
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                icon.className = 'fas fa-eye-slash';
+                this.innerHTML = '<i class="fas fa-eye-slash"></i> 隐藏详情';
+            } else {
+                content.style.display = 'none';
+                icon.className = 'fas fa-eye';
+                this.innerHTML = '<i class="fas fa-eye"></i> 显示详情';
+            }
+        });
+
+
+
+        // API settings persistence
+        const apiNameInput = document.getElementById('apiName');
+        const apiBaseInput = document.getElementById('apiBase');
+        const apiKeyInput = document.getElementById('apiKey');
+        const policyApiNameInput = document.getElementById('policyApiName');
+        const policyApiBaseInput = document.getElementById('policyApiBase');
+        const policyApiKeyInput = document.getElementById('policyApiKey');
+        if (apiNameInput) {
+            apiNameInput.value = localStorage.getItem('api_name') || '';
+        }
+        if (apiBaseInput) {
+            apiBaseInput.value = localStorage.getItem('api_base') || '';
+        }
+        if (apiKeyInput) {
+            apiKeyInput.value = localStorage.getItem('api_key') || '';
+        }
+        if (policyApiNameInput) {
+            policyApiNameInput.value = localStorage.getItem('policy_api_name') || '';
+        }
+        if (policyApiBaseInput) {
+            policyApiBaseInput.value = localStorage.getItem('policy_api_base') || '';
+        }
+        if (policyApiKeyInput) {
+            policyApiKeyInput.value = localStorage.getItem('policy_api_key') || '';
+        }
+        function persistApiSettings() {
+            if (apiNameInput) {
+                localStorage.setItem('api_name', apiNameInput.value.trim());
+            }
+            if (apiBaseInput) {
+                localStorage.setItem('api_base', apiBaseInput.value.trim());
+            }
+            if (apiKeyInput) {
+                localStorage.setItem('api_key', apiKeyInput.value.trim());
+            }
+            if (policyApiNameInput) {
+                localStorage.setItem('policy_api_name', policyApiNameInput.value.trim());
+            }
+            if (policyApiBaseInput) {
+                localStorage.setItem('policy_api_base', policyApiBaseInput.value.trim());
+            }
+            if (policyApiKeyInput) {
+                localStorage.setItem('policy_api_key', policyApiKeyInput.value.trim());
+            }
+        }
+        if (apiNameInput) {
+            apiNameInput.addEventListener('input', persistApiSettings);
+            apiNameInput.addEventListener('change', persistApiSettings);
+        }
+        if (apiBaseInput) {
+            apiBaseInput.addEventListener('input', persistApiSettings);
+            apiBaseInput.addEventListener('change', persistApiSettings);
+        }
+        if (apiKeyInput) {
+            apiKeyInput.addEventListener('input', persistApiSettings);
+            apiKeyInput.addEventListener('change', persistApiSettings);
+        }
+        if (policyApiNameInput) {
+            policyApiNameInput.addEventListener('input', persistApiSettings);
+            policyApiNameInput.addEventListener('change', persistApiSettings);
+        }
+        if (policyApiBaseInput) {
+            policyApiBaseInput.addEventListener('input', persistApiSettings);
+            policyApiBaseInput.addEventListener('change', persistApiSettings);
+        }
+        if (policyApiKeyInput) {
+            policyApiKeyInput.addEventListener('input', persistApiSettings);
+            policyApiKeyInput.addEventListener('change', persistApiSettings);
+        }
+
+        document.getElementById('evaluateBtn').addEventListener('click', function() {
+            const proposalText = document.getElementById('proposalText').value.trim();
+            
+            if (!proposalText) {
+                alert('请输入申请材料文本。');
+                return;
+            }
+
+            // Show loading spinner and thinking section
+            document.getElementById('loadingSpinner').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'none';
+            document.getElementById('thinkingSection').style.display = 'block';
+            this.disabled = true;
+
+            // Clear previous content
+            document.getElementById('thinkingContent').innerHTML = '';
+
+            // Initialize evaluation dialogue
+            let evaluationDialogue = [];
+            let currentRound = null;
+            let currentReviewer = null;
+            let currentContent = '';
+
+            // Collect optional API settings
+            const apiName = apiNameInput ? apiNameInput.value.trim() : '';
+            const apiBase = apiBaseInput ? apiBaseInput.value.trim() : '';
+            const apiKey = apiKeyInput ? apiKeyInput.value.trim() : '';
+            const policyApiName = policyApiNameInput ? policyApiNameInput.value.trim() : '';
+            const policyApiBase = policyApiBaseInput ? policyApiBaseInput.value.trim() : '';
+            const policyApiKey = policyApiKeyInput ? policyApiKeyInput.value.trim() : '';
+
+            // Make streaming API call
+            console.log('开始流式评估请求...');
+            fetch('/evaluate_stream', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    proposal_text: proposalText,
+                    api_name: apiName || undefined,
+                    api_base: apiBase || undefined,
+                    api_key: apiKey || undefined,
+                    policy_api_name: policyApiName || undefined,
+                    policy_api_base: policyApiBase || undefined,
+                    policy_api_key: policyApiKey || undefined
+                }),
+                // 增加超时时间（政策分析可能更久）
+                signal: AbortSignal.timeout(900000) // 15分钟超时
+            })
+            .then(response => {
+                console.log('收到响应:', response.status, response.statusText);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                
+                let buffer = ''; // 添加缓冲区来处理不完整的数据
+                
+                function readStream() {
+                    return reader.read().then(({done, value}) => {
+                        if (done) {
+                            console.log('流式读取完成');
+                            return;
+                        }
+                        
+                        const chunk = decoder.decode(value);
+                        console.log('收到数据块:', chunk);
+                        
+                        // 将新数据添加到缓冲区
+                        buffer += chunk;
+                        
+                        // 按行分割，但保留最后一行（可能不完整）
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || ''; // 保留最后一行作为缓冲区
+                        
+                        lines.forEach(line => {
+                            if (line.startsWith('data: ')) {
+                                try {
+                                    // 处理Unicode转义字符
+                                    let jsonStr = line.slice(6);
+                                    
+                                    // 检查JSON字符串是否完整
+                                    if (!jsonStr.trim()) {
+                                        return; // 跳过空行
+                                    }
+                                    
+                                    // 尝试解码Unicode转义序列
+                                    try {
+                                        jsonStr = jsonStr.replace(/\\u([0-9a-fA-F]{4})/g, (match, p1) => {
+                                            return String.fromCharCode(parseInt(p1, 16));
+                                        });
+                                    } catch (unicodeError) {
+                                        console.warn('Unicode解码失败，使用原始字符串:', unicodeError);
+                                    }
+                                    
+                                    // 尝试修复不完整的JSON
+                                    let data;
+                                    try {
+                                        data = JSON.parse(jsonStr);
+                                    } catch (parseError) {
+                                        console.warn('JSON解析失败，尝试修复:', parseError);
+                                        
+                                        // 尝试修复常见的JSON问题
+                                        let fixedJson = jsonStr;
+                                        
+                                        // 如果字符串没有正确结束，尝试添加缺失的引号或括号
+                                        if (fixedJson.includes('"') && !fixedJson.endsWith('"')) {
+                                            // 计算引号数量，如果奇数个，添加一个引号
+                                            const quoteCount = (fixedJson.match(/"/g) || []).length;
+                                            if (quoteCount % 2 === 1) {
+                                                fixedJson += '"';
+                                            }
+                                        }
+                                        
+                                        // 如果对象没有正确结束，尝试添加缺失的括号
+                                        const openBraces = (fixedJson.match(/\{/g) || []).length;
+                                        const closeBraces = (fixedJson.match(/\}/g) || []).length;
+                                        if (openBraces > closeBraces) {
+                                            fixedJson += '}'.repeat(openBraces - closeBraces);
+                                        }
+                                        
+                                        try {
+                                            data = JSON.parse(fixedJson);
+                                            console.log('JSON修复成功');
+                                        } catch (fixError) {
+                                            console.error('JSON修复失败，跳过此数据块:', fixError);
+                                            console.log('原始数据:', jsonStr.substring(0, 200) + '...');
+                                            return;
+                                        }
+                                    }
+                                    
+                                    if (data.error) {
+                                        console.error('服务器错误:', data.error);
+                                        alert('错误: ' + data.error);
+                                        document.getElementById('loadingSpinner').style.display = 'none';
+                                        document.getElementById('evaluateBtn').disabled = false;
+                                        return;
+                                    }
+                                    
+                                    if (data.status === 'validation_failed') {
+                                        console.log('验证失败:', data.message);
+                                        alert('输入验证失败: ' + data.message);
+                                        document.getElementById('loadingSpinner').style.display = 'none';
+                                        document.getElementById('evaluateBtn').disabled = false;
+                                        return;
+                                    }
+                                    
+                                    if (data.status === 'complete' && data.review) {
+                                        console.log('评估完成，显示结果');
+                                        // Display final results
+                                        displayResults(data.review, data.scoring_criteria);
+                                        
+                                        // 显示政策分析结果
+                                        console.log('检查政策分析数据:', data.policy_analysis);
+                                        if (data.policy_analysis) {
+                                            console.log('显示政策分析结果');
+                                            displayPolicyAnalysis(data.policy_analysis);
+                                        } else {
+                                            console.log('没有政策分析数据');
+                                        }
+                                        
+                                        document.getElementById('loadingSpinner').style.display = 'none';
+                                        document.getElementById('evaluateBtn').disabled = false;
+                                        return;
+                                    }
+                                    
+                                    if (data.status === 'error') {
+                                        console.error('评估错误:', data.message);
+                                        alert('评估错误: ' + data.message);
+                                        document.getElementById('loadingSpinner').style.display = 'none';
+                                        document.getElementById('evaluateBtn').disabled = false;
+                                        return;
+                                    }
+                                    
+                                    // Handle streaming content
+                                    if (data.round && data.reviewer) {
+                                        if (data.round !== currentRound || data.reviewer !== currentReviewer) {
+                                            // New round or reviewer
+                                            if (currentRound && currentReviewer) {
+                                                // Save previous round
+                                                evaluationDialogue.push({
+                                                    round: currentRound,
+                                                    reviewer: currentReviewer,
+                                                    role: getReviewerRole(currentReviewer),
+                                                    dialogue: currentContent
+                                                });
+                                            }
+                                            
+                                            currentRound = data.round;
+                                            currentReviewer = data.reviewer;
+                                            currentContent = '';
+                                            
+                                            // Add new round header
+                                            addRoundHeader(data.round, data.reviewer, getReviewerRole(data.reviewer));
+                                        }
+                                        
+                                        if (data.status === 'streaming' && data.content) {
+                                            currentContent += data.content;
+                                            appendContent(data.content);
+                                        }
+                                    }
+                                    
+                                } catch (e) {
+                                    console.error('解析SSE数据错误:', e);
+                                }
+                            }
+                        });
+                        
+                        return readStream();
+                    }).catch(error => {
+                        console.error('读取流时出错:', error);
+                        alert('读取评估数据时出错: ' + error.message);
+                        document.getElementById('loadingSpinner').style.display = 'none';
+                        document.getElementById('evaluateBtn').disabled = false;
+                    });
+                }
+                
+                return readStream();
+            })
+            .catch(error => {
+                console.error('流式评估错误:', error);
+                console.log('尝试使用非流式评估...');
+                
+                // 如果流式评估失败，尝试使用非流式评估
+                fetch('/evaluate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        proposal_text: proposalText,
+                        api_name: apiName || undefined,
+                        api_base: apiBase || undefined,
+                        api_key: apiKey || undefined,
+                        policy_api_name: policyApiName || undefined,
+                        policy_api_base: policyApiBase || undefined,
+                        policy_api_key: policyApiKey || undefined
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('非流式评估成功');
+                        displayResults(data.review, data.scoring_criteria);
+                        
+                        // 显示评估对话信息
+                        if (data.review.evaluation_dialogue) {
+                            displayEvaluationProcess(data.review);
+                        }
+                    } else {
+                        alert('错误: ' + data.error);
+                    }
+                })
+                .catch(fallbackError => {
+                    console.error('非流式评估也失败:', fallbackError);
+                    alert('评估失败: ' + error.message + '\n备用评估也失败: ' + fallbackError.message);
+                })
+                .finally(() => {
+                    document.getElementById('loadingSpinner').style.display = 'none';
+                    document.getElementById('evaluateBtn').disabled = false;
+                });
+            });
+        });
+
+        function getReviewerRole(reviewer) {
+            const roles = {
+                '输入验证专家': '验证输入内容有效性',
+                '内容质量分析专家': '分析申请材料内容质量',
+                '各维度评估专家': '详细评估5个核心维度',
+                '综合评审专家': '最终综合评估和建议',
+                '结构化评估专家': '生成结构化评估结果'
+            };
+            return roles[reviewer] || '评估专家';
+        }
+
+        function addRoundHeader(round, reviewer, role) {
+            const reviewerColors = {
+                '输入验证专家': 'primary',
+                '内容质量分析专家': 'info',
+                '各维度评估专家': 'warning',
+                '综合评审专家': 'success',
+                '结构化评估专家': 'secondary'
+            };
+            
+            const color = reviewerColors[reviewer] || 'secondary';
+            
+            const headerHtml = `
+                <div class="mb-4">
+                    <div class="card border-${color}">
+                        <div class="card-header bg-${color} text-white">
+                            <h6 class="mb-0">
+                                <i class="fas fa-user-tie"></i> 
+                                第${round}轮 - ${reviewer}
+                            </h6>
+                            <small>${role}</small>
+                        </div>
+                        <div class="card-body">
+                            <div class="dialogue-content" style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('thinkingContent').insertAdjacentHTML('beforeend', headerHtml);
+        }
+
+        function appendContent(content) {
+            const dialogueContents = document.querySelectorAll('.dialogue-content');
+            if (dialogueContents.length > 0) {
+                const lastContent = dialogueContents[dialogueContents.length - 1];
+                lastContent.textContent += content;
+                lastContent.scrollTop = lastContent.scrollHeight;
+            }
+        }
+
+        function displayResults(review, scoringCriteria) {
+            // Display total score
+            const totalScoreContainer = document.getElementById('totalScore');
+            const totalScore = review.aggregate?.weighted_total_100 || 0;
+            const maxTotal = 100;
+            
+            totalScoreContainer.innerHTML = `
+                <h2>${totalScore}/${maxTotal}</h2>
+                <p class="mb-0">总分</p>
+                <small>${getScoreLevel(totalScore)}</small>
+            `;
+            
+            // Create radar chart
+            createRadarChart(review);
+            
+            // Display key metrics
+            const keyMetricsContainer = document.getElementById('keyMetrics');
+            keyMetricsContainer.innerHTML = '';
+
+            if (review.scores && Array.isArray(review.scores)) {
+                review.scores.forEach(scoreItem => {
+                    const metricCard = document.createElement('div');
+                    metricCard.className = 'col-md-6 col-lg-4 mb-4';
+                    
+                    // 计算加权分数
+                    const weightedScore = (scoreItem.score_1_to_5 / 5) * scoreItem.weight;
+                    const maxWeightedScore = scoreItem.weight;
+                    
+                    metricCard.innerHTML = `
+                        <div class="metric-card">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">${scoreItem.dimension}</h5>
+                                <span class="metric-score">${scoreItem.score_1_to_5}/5 (${weightedScore.toFixed(1)}/${maxWeightedScore})</span>
+                            </div>
+                            <div class="metric-description">
+                                ${getCriteriaDescription(scoreItem.dimension, scoringCriteria)}
+                            </div>
+                            ${scoreItem.evidence && scoreItem.evidence.length > 0 ? `
+                                <div class="criteria-explanation">
+                                    <strong>证据:</strong>
+                                    <ul class="mt-2">
+                                        ${scoreItem.evidence.map(evidence => `<li>${evidence}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            ${scoreItem.issues && scoreItem.issues.length > 0 ? `
+                                <div class="criteria-explanation mt-2">
+                                    <strong>问题:</strong>
+                                    <ul class="mt-2">
+                                        ${scoreItem.issues.map(issue => `<li>${issue}</li>`).join('')}
+                                    </ul>
+                                </div>
+                            ` : ''}
+                            ${scoreItem.suggestion ? `
+                                <div class="criteria-explanation mt-2">
+                                    <strong>建议:</strong>
+                                    <div class="mt-2">${scoreItem.suggestion}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                    keyMetricsContainer.appendChild(metricCard);
+                });
+            }
+
+            // Display priority suggestions
+            const suggestionsContainer = document.getElementById('suggestionsContent');
+            suggestionsContainer.innerHTML = '';
+            
+            if (review.aggregate?.priority_fixes_top5 && Array.isArray(review.aggregate.priority_fixes_top5)) {
+                review.aggregate.priority_fixes_top5.forEach((suggestion, index) => {
+                    const suggestionDiv = document.createElement('div');
+                    suggestionDiv.className = 'suggestion-item';
+                    suggestionDiv.innerHTML = `
+                        <strong>${index + 1}. ${suggestion}</strong>
+                    `;
+                    suggestionsContainer.appendChild(suggestionDiv);
+                });
+            }
+
+            // Display other fields
+            const otherFieldsContainer = document.getElementById('otherFieldsContent');
+            otherFieldsContainer.innerHTML = '';
+
+            if (review.aggregate) {
+                const aggregate = review.aggregate;
+                
+                if (aggregate.strengths && aggregate.strengths.length > 0) {
+                    const strengthsDiv = document.createElement('div');
+                    strengthsDiv.className = 'field-item';
+                    strengthsDiv.innerHTML = `
+                        <strong>主要优势:</strong>
+                        <ul class="mt-2">
+                            ${aggregate.strengths.map(strength => `<li>${strength}</li>`).join('')}
+                        </ul>
+                    `;
+                    otherFieldsContainer.appendChild(strengthsDiv);
+                }
+                
+                if (aggregate.risks && aggregate.risks.length > 0) {
+                    const risksDiv = document.createElement('div');
+                    risksDiv.className = 'field-item';
+                    risksDiv.innerHTML = `
+                        <strong>主要风险:</strong>
+                        <ul class="mt-2">
+                            ${aggregate.risks.map(risk => `<li>${risk}</li>`).join('')}
+                        </ul>
+                    `;
+                    otherFieldsContainer.appendChild(risksDiv);
+                }
+                
+                // 添加调试信息显示
+                if (review.parse_error) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'field-item';
+                    errorDiv.style.borderLeftColor = '#dc3545';
+                    errorDiv.innerHTML = `
+                        <strong style="color: #dc3545;">解析错误:</strong>
+                        <div class="mt-2">${review.parse_error}</div>
+                        <details class="mt-2">
+                            <summary>查看原始响应</summary>
+                            <pre style="background: #f8f9fa; padding: 1rem; border-radius: 5px; font-size: 0.8rem; max-height: 200px; overflow-y: auto;">${review.raw_response || '无原始响应'}</pre>
+                        </details>
+                    `;
+                    otherFieldsContainer.appendChild(errorDiv);
+                }
+            }
+
+            // Show results section
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getScoreLevel(score) {
+            if (score >= 90) return '优秀';
+            if (score >= 80) return '良好';
+            if (score >= 70) return '中等';
+            if (score >= 60) return '及格';
+            return '需要改进';
+        }
+
+        function getCriteriaDescription(dimension, scoringCriteria) {
+            if (!scoringCriteria || typeof scoringCriteria !== 'object') {
+                return '暂无描述';
+            }
+            try {
+                const criteria = Object.values(scoringCriteria).find(c => c.name === dimension);
+                return criteria ? criteria.description : '暂无描述';
+            } catch (error) {
+                console.error('Error in getCriteriaDescription:', error);
+                return '暂无描述';
+            }
+        }
+
+        function createRadarChart(review) {
+            if (!review.scores || !Array.isArray(review.scores)) {
+                return;
+            }
+
+            // 检查Chart.js是否可用
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js library not loaded');
+                return;
+            }
+
+            const canvas = document.getElementById('radarChart');
+            if (!canvas) {
+                console.error('Radar chart canvas not found');
+                return;
+            }
+
+            const ctx = canvas.getContext('2d');
+            
+            // 销毁现有图表
+            if (window.radarChart && typeof window.radarChart.destroy === 'function') {
+                window.radarChart.destroy();
+            }
+
+            const labels = review.scores.map(item => item.dimension);
+            const scores = review.scores.map(item => item.score_1_to_5);
+            const weights = review.scores.map(item => item.weight);
+
+            try {
+                window.radarChart = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '评分 (1-5分)',
+                            data: scores,
+                            backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                            borderColor: 'rgba(102, 126, 234, 1)',
+                            borderWidth: 2,
+                            pointBackgroundColor: 'rgba(102, 126, 234, 1)',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: 'rgba(102, 126, 234, 1)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 5,
+                                min: 0,
+                                ticks: {
+                                    stepSize: 1,
+                                    callback: function(value) {
+                                        return value + '分';
+                                    }
+                                },
+                                pointLabels: {
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const index = context.dataIndex;
+                                        const score = context.parsed.r;
+                                        const weight = weights[index];
+                                        const weightedScore = (score / 5) * weight;
+                                        return `评分: ${score}/5 (加权: ${weightedScore.toFixed(1)}/${weight})`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('Error creating radar chart:', error);
+                // 如果雷达图创建失败，至少显示一个错误信息
+                const canvas = document.getElementById('radarChart');
+                if (canvas) {
+                    canvas.style.display = 'none';
+                    const parent = canvas.parentElement;
+                    if (parent) {
+                        parent.innerHTML = '<div class="alert alert-warning">雷达图加载失败，但评估结果仍然可用。</div>';
+                    }
+                }
+            }
+        }
+
+        function displayEvaluationProcess(process) {
+            const thinkingContent = document.getElementById('thinkingContent');
+            
+            if (!thinkingContent) return;
+            
+            let processHtml = `
+                <div class="mb-3">
+                    <h6><i class="fas fa-check-circle text-success"></i> 评估模式：严格模式</h6>
+                    <h6><i class="fas fa-layer-group text-info"></i> 评估轮次：5轮专家评估（第6轮为政策分析）</h6>
+                </div>
+            `;
+            
+            if (process.evaluation_dialogue && Array.isArray(process.evaluation_dialogue)) {
+                process.evaluation_dialogue.forEach((dialogue, index) => {
+                    // 跳过结构化评估专家，因为它只是生成JSON，不需要显示给用户
+                    if (dialogue.reviewer === '结构化评估专家') {
+                        return;
+                    }
+                    
+                    const reviewerColors = {
+                        '输入验证专家': 'primary',
+                        '内容质量分析专家': 'info',
+                        '各维度评估专家': 'warning',
+                        '综合评审专家': 'success',
+                        '结构化评估专家': 'secondary',
+                        '政策分析专家': 'success'
+                    };
+                    
+                    const color = reviewerColors[dialogue.reviewer] || 'secondary';
+                    
+                    processHtml += `
+                        <div class="mb-4">
+                            <div class="card border-${color}">
+                                <div class="card-header bg-${color} text-white">
+                                    <h6 class="mb-0">
+                                        <i class="fas fa-user-tie"></i> 
+                                        第${dialogue.round}轮 - ${dialogue.reviewer}
+                                    </h6>
+                                    <small>${dialogue.role}</small>
+                                </div>
+                                <div class="card-body">
+                                    <div class="dialogue-content" style="white-space: pre-wrap; font-size: 0.9rem; line-height: 1.6;">
+                                        ${dialogue.dialogue}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            thinkingContent.innerHTML = processHtml;
+        }
+
+        function displayPolicyAnalysis(policyAnalysis) {
+            console.log('displayPolicyAnalysis 被调用，参数:', policyAnalysis);
+            const resultSection = document.getElementById('resultSection');
+            
+            if (!resultSection) {
+                console.error('找不到 resultSection 元素');
+                return;
+            }
+            
+            const policySection = document.createElement('div');
+            policySection.className = 'mt-4';
+            const rawMarkdown = typeof policyAnalysis === 'string' ? policyAnalysis : (policyAnalysis?.content || '');
+            const renderedHtml = DOMPurify.sanitize(marked.parse(rawMarkdown || '暂无政策分析。'));
+            policySection.innerHTML = `
+                <div class="card border-success">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">
+                            <i class="fas fa-search"></i> 最新政策分析
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="policy-content" style="font-size: 0.9rem; line-height: 1.6;">
+                            ${renderedHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            resultSection.appendChild(policySection);
+        }
+
+    </script>
+</body>
+</html> 
