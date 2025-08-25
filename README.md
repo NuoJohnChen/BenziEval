@@ -143,7 +143,7 @@ python app_overseas_young_scholar.py
 ## 引用
 ```
 @misc{nuo2025benzieval,
-  author = {Nuo Chen},
+  author = {NuoJohnChen},
   title = {BenziEval},
   year = {2025},
   publisher = {GitHub},
