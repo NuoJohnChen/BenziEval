@@ -1,4 +1,4 @@
-# 国内青年人才项目评估服务（Web）
+# 国内青年人才项目评估服务
 
 这是一个基于AI的国内青年人才项目多维度评估系统。系统基于成功经验和失败教训，采用针对性的5个核心维度对申请材料进行全面分析，并提供具体的改进建议。
 
@@ -6,7 +6,7 @@
 - Python 3.9+
 - Linux/macOS/Windows
 
-## 安装依赖（示例）
+## 安装依赖
 ```bash
 # 1) 选择/激活你的 Conda/虚拟环境（不要使用 base）
 conda activate benzieval
@@ -56,7 +56,7 @@ python app_overseas_young_scholar.py
 
 说明：
 - 主评估使用主评估设置；
-- 政策分析可单独配置，若 `policy_api_name` 留空，后端仍可按你的策略选择默认；推荐显式填写 `deepseek-r1-search-pro`。
+- 政策分析可单独配置，若 `policy_api_name` 留空，后端仍可按你的策略选择默认；推荐 `deepseek-r1-search-pro`。
 
 ## 使用流程
 1. 粘贴申请材料或通过“PDF URL/上传 PDF”提取文本
@@ -67,7 +67,7 @@ python app_overseas_young_scholar.py
    - 关键维度细项（证据/问题/建议）
    - 优先级改进建议
    - 详细评估信息
-   - 最新政策分析（Markdown 渲染）
+   - 最新政策分析
 
 ## 评估标准说明
 - 评分维度与权重（总权重=100）：
