@@ -139,15 +139,3 @@ python app_overseas_young_scholar.py
 
 ## 许可证
 此示例仅用于研究与教学，请遵守相关政策法规与平台条款。
-
-## 引用
-```
-@misc{nuo2025benzieval,
-  author = {NuoJohnChen},
-  title = {BenziEval},
-  year = {2025},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/nuojohnchen/BenziEval}}
-}
-```
